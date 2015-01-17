@@ -1,5 +1,6 @@
 #set working directory.
-setwd("C:/Users/bradyhsu.PHALANX/RepData_PeerAssessment1")
+#setwd("C:/Users/bradyhsu.PHALANX/RepData_PeerAssessment1")
+setwd("C:/Users/Brady/RepData_PeerAssessment1")
 
 ##Loading and preprocessing the data
 #Load the data (i.e. read.csv())
@@ -104,7 +105,7 @@ setwd("C:/Users/bradyhsu.PHALANX/RepData_PeerAssessment1")
         #For this part the weekdays() function may be of some help here. Use the dataset 
         #with the filled-in missing values for this part.
         
-        #Create a new factor variable in the dataset with two levels â€“ â€œweekdayâ€ and â€œweekendâ€ 
+        #Create a new factor variable in the dataset with two levels ?€? ?€œweekday?€? and ?€œweekend?€? 
         #indicating whether a given date is a weekday or weekend day.
         chk_weekend <- function(x) 
         { 
@@ -115,14 +116,22 @@ setwd("C:/Users/bradyhsu.PHALANX/RepData_PeerAssessment1")
                                 return("weekday")
                 }
         }
+
+        t <- lapply(ad_all$date, FUN=chk_weekend)
+        t2 <- unlist(t)
         
-        ad_all$weekdays <- chk_weekend(ad_all$date)
+        ad_all$weekdays <- t2
 
         #Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) 
         #and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
 
-        ad_all_summarized_data2 <- ddply(ad_all, .(interval), summarise, "mean"=mean(steps), "max"=max(steps))
-        par(mfrow = c(1, 1))
-        plot(x=ad_all_summarized_data2$interval, y=ad_all_summarized_data2$mean, type="l", xlab="Interval", ylab="Number of steps")
+        ad_all_summarized_data2 <- ddply(ad_all, .(interval, weekdays), summarise, "mean"=mean(steps), "max"=max(steps))
+        #par(mfrow = c(1, 1))
+        #plot(x=ad_all_summarized_data2$interval, y=ad_all_summarized_data2$mean, type="l", xlab="Interval", ylab="Number of steps")
+        library(ggplot2)
+        g <- ggplot(ad_all_summarized_data2, aes(interval, mean))
+        #g + geom_line(alpha = 1/3) + facet_wrap(~ weekdays, nrow = 2, ncol = 1) + geom_smooth(method="lm", se=FALSE, col="steelblue") + labs(x = "Interval") + labs(y = "Number of steps")
+        g + geom_line(alpha = 1/3) + facet_wrap(~ weekdays, nrow = 2, ncol = 1) + labs(x = "Interval") + labs(y = "Number of steps")
+
         
         #See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
